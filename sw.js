@@ -3,7 +3,7 @@
 // (viktigt när man utvecklar och efter en ny version), offline används cachen.
 // Lägg till nya filer i SHELL. CACHE sätts automatiskt av tools/sync-version.mjs
 // (via `npm version`), så varje release får en ny cache och gamla rensas.
-const CACHE = 'bb-shell-v0.2.0';
+const CACHE = 'bb-shell-v0.3.0';
 
 const SHELL = [
   './',

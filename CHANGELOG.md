@@ -8,6 +8,8 @@ automatiskt till en ny versionsrubrik med dagens datum.
 
 ## [Ej släppt]
 
+## [0.3.0] - 2026-09-20
+
 ### Tillagt
 - En banner "En ny version av appen finns" med knapparna Uppdatera och Senare visas när en ny version har släppts och appen är öppen. Bannern döljs medan en övning pågår, så att den inte stör eller avbryter passet.
 
