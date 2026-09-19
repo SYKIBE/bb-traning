@@ -1,6 +1,6 @@
 {
   "name": "bb-traning",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Bäckenbottenträning som PWA i vanilla JS",
   "repository": {

@@ -8,6 +8,8 @@ automatiskt till en ny versionsrubrik med dagens datum.
 
 ## [Ej släppt]
 
+## [0.2.0] - 2026-09-20
+
 ### Tillagt
 - Chevron-knappar på var sida om Paus-knappen för att hoppa mellan moment under en övning. Höger går till nästa moment. Vänster börjar om momentet om det pågått mer än 2 sekunder, annars går den till föregående. Knapparna fungerar även när övningen är pausad.
 
