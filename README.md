@@ -37,6 +37,20 @@ Tester ([tests/version.test.js](tests/version.test.js)) varnar om något av dett
 
 **Meddelande om ny version:** Användare som har appen öppen får en banner när en ny version släppts: varje release ändrar `sw.js` (cache-namnet), och webbläsaren upptäcker den nya servicearbetaren i bakgrunden ([js/updates.js](js/updates.js)). Bannern visas alltså bara vid riktiga releaser och göms medan en övning pågår.
 
+## Publicering (GitHub Pages)
+
+Appen ligger på https://sykibe.github.io/bb-traning/ och publiceras **bara vid releaser**: [.github/workflows/deploy.yml](.github/workflows/deploy.yml) körs när en tagg `v*` pushas, alltså av `git push --follow-tags` efter `npm version`. Vanliga pushar till `main` publiceras inte.
+
+Workflowen kontrollerar att taggen stämmer med `version` i `package.json`, kör testerna och publicerar sedan bara appens filer (`index.html`, `manifest.webmanifest`, `sw.js`, `css/`, `js/`, `icons/`). Följ körningen under fliken Actions.
+
+Publicera om en befintlig tagg för hand:
+
+```sh
+gh workflow run deploy.yml -f ref=v0.3.0
+```
+
+Inställningar som behövs på GitHub (redan gjorda): Settings → Pages → Source = *GitHub Actions*, och miljön `github-pages` måste tillåta taggar `v*` (Settings → Environments → github-pages → Deployment branches and tags).
+
 ## Lägga till en övning
 
 Alla övningar ligger i [js/data/exercises.js](js/data/exercises.js):

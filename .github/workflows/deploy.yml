@@ -1,0 +1,77 @@
+# Deployar appen till GitHub Pages, men bara releaser.
+#
+# Triggas när en tagg som börjar med "v" pushas, alltså av
+#   npm version patch|minor|major && git push --follow-tags
+# Vanliga pushar till main publiceras inte.
+#
+# Kan också köras för hand mot en befintlig tagg (t.ex. för att publicera om):
+#   gh workflow run deploy.yml -f ref=v0.3.0
+name: Deploy till GitHub Pages
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Taggen som ska deployas, t.ex. v0.3.0'
+        required: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# En deploy i taget. En pågående deploy avbryts inte av en ny.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Taggen som deployas: den som triggade körningen, eller den man angav för hand.
+      REF_NAME: ${{ inputs.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      # Skydd mot att en tagg och package.json pekar åt olika håll.
+      - name: Kontrollera att taggen matchar versionen i package.json
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "v$VERSION" != "$REF_NAME" ]; then
+            echo "::error::Taggen $REF_NAME matchar inte versionen $VERSION i package.json"
+            exit 1
+          fi
+
+      - name: Kör testerna
+        run: node --test tests/
+
+      # Bara det som appen behöver, inte tester, verktyg och dokumentation.
+      - name: Samla appens filer
+        run: |
+          mkdir dist
+          cp -r index.html manifest.webmanifest sw.js css js icons dist/
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
