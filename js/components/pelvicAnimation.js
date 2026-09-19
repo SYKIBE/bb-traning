@@ -7,11 +7,12 @@ import { h } from '../dom.js';
 export function createStage({ small = false } = {}) {
   const count = h('div', { class: 'stage-count', 'aria-hidden': 'true' });
   const images = h('div', { class: 'stage-images' });
+  const orb = h('div', { class: 'orb' });
   const el = h(
     'div',
     { class: `stage v-idle${small ? ' stage--sm' : ''}`, 'aria-hidden': 'true' },
     h('div', { class: 'ring' }),
-    h('div', { class: 'orb' }),
+    orb,
     images,
     count,
   );
@@ -22,6 +23,9 @@ export function createStage({ small = false } = {}) {
 
     // visuals: ['squeeze', ...], seconds: momentets längd, imageUrls: valfria bilder
     setVisuals(visuals, seconds = 1, imageUrls = []) {
+      // Cirkelns storlek just nu blir startpunkt för nästa animation (--from),
+      // så att bytet mellan t.ex. uthållighetsknip och vila blir mjukt.
+      el.style.setProperty('--from', new DOMMatrixReadOnly(getComputedStyle(orb).transform).a);
       // Nollställ först så att en identisk animation startar om från början.
       el.className = base;
       void el.offsetWidth;

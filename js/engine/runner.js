@@ -5,6 +5,9 @@
 //
 // Status: 'idle' | 'active' | 'paused' | 'done'
 // Fas (i onTick): 'countdown' | 'running'
+//
+// Man kan hoppa mellan moment medan övningen körs eller är pausad
+// (seekToMoment / previousMoment / nextMoment), men inte under nedräkningen.
 export function createRunner(moments, options = {}) {
   const {
     countdownSeconds = 3,
@@ -38,6 +41,7 @@ export function createRunner(moments, options = {}) {
   let timer = null;
   let lastCountdownValue = null;
   let currentIndex = -1;
+  let countdownEnded = false;
   let lastMomentCountdown = null;
 
   const elapsed = () => (status === 'active' ? baseElapsed + (now() - resumedAt) : baseElapsed);
@@ -65,8 +69,9 @@ export function createRunner(moments, options = {}) {
     onDone?.();
   }
 
-  function tick() {
-    if (status !== 'active') return;
+  // Räknar ut var i övningen vi är och rapporterar det. Körs av tick() (aktiv)
+  // och av seekToMoment (även pausad, så att skärmen uppdateras vid hopp).
+  function evaluate() {
     const e = elapsed();
 
     if (e < countdownMs) {
@@ -81,11 +86,14 @@ export function createRunner(moments, options = {}) {
 
     const t = e - countdownMs;
     if (t >= totalMs) {
-      finish();
+      if (status === 'active') finish();
       return;
     }
 
-    if (currentIndex === -1) onCountdownEnd?.();
+    if (!countdownEnded) {
+      countdownEnded = true;
+      onCountdownEnd?.();
+    }
 
     // Vid throttlad flik kan flera moment ha passerats: vi hoppar direkt till
     // det aktuella i stället för att spela upp alla cue-ljud i följd.
@@ -120,6 +128,31 @@ export function createRunner(moments, options = {}) {
     });
   }
 
+  function tick() {
+    if (status === 'active') evaluate();
+  }
+
+  // Momentet vi är i och hur långt in i det vi är, eller null utanför momenten
+  // (före start, under nedräkningen och efter slut).
+  function position() {
+    const t = elapsed() - countdownMs;
+    if (t < 0 || t >= totalMs) return null;
+    const index = ends.findIndex((end) => t < end);
+    return { index, intoMomentMs: t - (index === 0 ? 0 : ends[index - 1]) };
+  }
+
+  // Hoppar till början av moment `index`. Returnerar false om det inte går.
+  function seekToMoment(index) {
+    if (status !== 'active' && status !== 'paused') return false;
+    if (!position() || !Number.isInteger(index) || index < 0 || index >= moments.length) return false;
+    baseElapsed = countdownMs + (index === 0 ? 0 : ends[index - 1]);
+    resumedAt = now();
+    currentIndex = -1; // tvingar onMomentStart, även när samma moment startas om
+    lastMomentCountdown = null;
+    evaluate();
+    return true;
+  }
+
   return {
     start() {
       if (status === 'active' || status === 'paused') return;
@@ -127,6 +160,7 @@ export function createRunner(moments, options = {}) {
       baseElapsed = 0;
       lastCountdownValue = null;
       currentIndex = -1;
+      countdownEnded = false;
       lastMomentCountdown = null;
       resumedAt = now();
       setStatus('active');
@@ -152,7 +186,21 @@ export function createRunner(moments, options = {}) {
       baseElapsed = 0;
       lastCountdownValue = null;
       currentIndex = -1;
+      countdownEnded = false;
       setStatus('idle');
+    },
+    seekToMoment,
+    // Som i en musikspelare: har momentet pågått längre än `restartAfterMs` börjar
+    // det om, annars går man till föregående (på första momentet börjar det om).
+    previousMoment(restartAfterMs = 2000) {
+      const pos = position();
+      if (!pos) return false;
+      return seekToMoment(pos.intoMomentMs > restartAfterMs ? pos.index : Math.max(0, pos.index - 1));
+    },
+    nextMoment() {
+      const pos = position();
+      if (!pos || pos.index >= moments.length - 1) return false;
+      return seekToMoment(pos.index + 1);
     },
     tick,
     get status() {

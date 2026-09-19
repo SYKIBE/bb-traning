@@ -12,20 +12,34 @@
   --track: #d5e1de;
   --shadow: 0 2px 10px rgba(16, 48, 43, 0.08);
 
-  /* Styrka 1 (grön) → 5 (röd), orange på steg 3 */
-  --str-1: #2e9e4f;
-  --str-2: #8ab834;
-  --str-3: #f59e0b;
-  --str-4: #ef6c1a;
-  --str-5: #d92d3f;
+  /* Svårighetsgrad 1 (grön) → 5 (röd), orange på steg 3 */
+  --diff-1: #2e9e4f;
+  --diff-2: #8ab834;
+  --diff-3: #f59e0b;
+  --diff-4: #ef6c1a;
+  --diff-5: #d92d3f;
 
-  /* Momenttyper */
-  --c-kraftknip: #c2410c;
-  --c-snabbknip: #7c3aed;
-  --c-uthallighetsknip: #0369a1;
+  /* Momenttyper: varmare färg och mindre cirkel = hårdare knip.
+     Vila (kall teal, startstorlek) → snabbknip (gul) → uthållighetsknip (orange) → kraftknip (röd). */
   --c-vila: #2a9d8f;
+  --c-snabbknip: #f7c815;
+  --c-uthallighetsknip: #f07a10;
+  --c-kraftknip: var(--diff-5);
   --c-countdown: #475569;
   --c-done: #15803d;
+
+  /* Cirkelns storlek per typ, som andel av startstorleken (vila = 1) */
+  --scale-fast: 0.85;
+  --scale-hold: 0.72;
+  --scale-power: 0.55;
+
+  /* Färg för etiketten i körpanelen: mörkare nyanser i ljust tema så att gult/orange är läsbara */
+  --t-vila: #1a7a6e;
+  --t-snabbknip: #8a6500;
+  --t-uthallighetsknip: #b45309;
+  --t-kraftknip: #c62838;
+  --t-countdown: #475569;
+  --t-done: #15803d;
 
   --radius: 16px;
   --nav-h: 64px;
@@ -45,6 +59,13 @@
     --on-primary: #06201d;
     --track: #2b4743;
     --shadow: none;
+
+    --t-vila: #2a9d8f;
+    --t-snabbknip: #f7c815;
+    --t-uthallighetsknip: #f07a10;
+    --t-kraftknip: #ff6b7a;
+    --t-countdown: #94a3b8;
+    --t-done: #4ade80;
   }
 }
 
@@ -201,15 +222,15 @@ a {
 }
 
 .level-enkel {
-  --level: var(--str-1);
+  --level: var(--diff-1);
 }
 
 .level-medium {
-  --level: var(--str-3);
+  --level: var(--diff-3);
 }
 
 .level-avancerad {
-  --level: var(--str-5);
+  --level: var(--diff-5);
 }
 
 .resume-button {
@@ -279,8 +300,8 @@ a {
   font-size: 0.875rem;
 }
 
-/* ── Styrkebar ──────────────────────────────────────────── */
-.strength {
+/* ── Svårighetsstapel ───────────────────────────────────── */
+.difficulty {
   --step-w: 10px;
   --step-h: 6px;
   display: inline-flex;
@@ -288,32 +309,32 @@ a {
   gap: 3px;
 }
 
-.strength--lg {
+.difficulty--lg {
   --step-w: 14px;
   --step-h: 9px;
   gap: 4px;
 }
 
-.strength-step {
+.difficulty-step {
   width: var(--step-w);
   height: calc(var(--step-h) * (var(--n) + 1));
   border-radius: 3px;
   background: var(--track);
 }
 
-.strength-step[data-step='1'] { --n: 1; }
-.strength-step[data-step='2'] { --n: 2; }
-.strength-step[data-step='3'] { --n: 3; }
-.strength-step[data-step='4'] { --n: 4; }
-.strength-step[data-step='5'] { --n: 5; }
+.difficulty-step[data-step='1'] { --n: 1; }
+.difficulty-step[data-step='2'] { --n: 2; }
+.difficulty-step[data-step='3'] { --n: 3; }
+.difficulty-step[data-step='4'] { --n: 4; }
+.difficulty-step[data-step='5'] { --n: 5; }
 
-.strength-step.is-on[data-step='1'] { background: var(--str-1); }
-.strength-step.is-on[data-step='2'] { background: var(--str-2); }
-.strength-step.is-on[data-step='3'] { background: var(--str-3); }
-.strength-step.is-on[data-step='4'] { background: var(--str-4); }
-.strength-step.is-on[data-step='5'] { background: var(--str-5); }
+.difficulty-step.is-on[data-step='1'] { background: var(--diff-1); }
+.difficulty-step.is-on[data-step='2'] { background: var(--diff-2); }
+.difficulty-step.is-on[data-step='3'] { background: var(--diff-3); }
+.difficulty-step.is-on[data-step='4'] { background: var(--diff-4); }
+.difficulty-step.is-on[data-step='5'] { background: var(--diff-5); }
 
-.strength-legend {
+.difficulty-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -350,6 +371,8 @@ a {
 .stat-label {
   color: var(--muted);
   font-size: 0.8rem;
+  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .facts {
@@ -370,37 +393,88 @@ a {
   margin-bottom: 6px;
 }
 
+/* Rad med [‹] [Start/Paus/Fortsätt] [Avsluta] [›]. Paus-knappen är smalare så att chevronerna får plats. */
 .controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  align-items: center;
   justify-content: center;
+  gap: 12px;
 }
 
 .controls .btn {
-  flex: 1 1 140px;
-  max-width: 260px;
+  flex: 1 1 96px;
+  min-width: 0;
+  max-width: 180px;
+  padding: 0 12px;
 }
 
+.btn-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.btn-icon:not(:disabled):active {
+  background: var(--surface-2);
+}
+
+.btn-icon:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+@media (max-width: 360px) {
+  .controls {
+    gap: 8px;
+  }
+
+  .controls .btn-lg {
+    padding: 0 8px;
+    font-size: 1rem;
+  }
+
+  .btn-icon {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* --phase = fyllnadsfärg (framstegsindikatorn), --phase-text = läsbar textfärg (etiketten) */
 .run-panel {
   --phase: var(--c-vila);
+  --phase-text: var(--t-vila);
   margin-bottom: 16px;
   text-align: center;
 }
 
-.run-panel[data-type='kraftknip'] { --phase: var(--c-kraftknip); }
-.run-panel[data-type='snabbknip'] { --phase: var(--c-snabbknip); }
-.run-panel[data-type='uthallighetsknip'] { --phase: var(--c-uthallighetsknip); }
-.run-panel[data-type='vila'] { --phase: var(--c-vila); }
-.run-panel[data-type='countdown'] { --phase: var(--c-countdown); }
-.run-panel[data-type='done'] { --phase: var(--c-done); }
+.run-panel[data-type='kraftknip'] { --phase: var(--c-kraftknip); --phase-text: var(--t-kraftknip); }
+.run-panel[data-type='snabbknip'] { --phase: var(--c-snabbknip); --phase-text: var(--t-snabbknip); }
+.run-panel[data-type='uthallighetsknip'] { --phase: var(--c-uthallighetsknip); --phase-text: var(--t-uthallighetsknip); }
+.run-panel[data-type='vila'] { --phase: var(--c-vila); --phase-text: var(--t-vila); }
+.run-panel[data-type='countdown'] { --phase: var(--c-countdown); --phase-text: var(--t-countdown); }
+.run-panel[data-type='done'] { --phase: var(--c-done); --phase-text: var(--t-done); }
 
 .run-panel p {
   margin: 0;
 }
 
 .run-phase {
-  color: var(--phase);
+  color: var(--phase-text);
   font-size: 1.6rem;
   font-weight: 800;
 }
@@ -411,11 +485,30 @@ a {
   color: var(--muted);
 }
 
+/* Egen stil så att banan ser lika ut oavsett fyllnadsfärg (Chrome väljer annars banfärg efter accentfärgens ljushet). */
 .run-progress {
   width: 100%;
   height: 10px;
   margin: 12px 0 8px;
-  accent-color: var(--phase);
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  overflow: hidden;
+  background: var(--track);
+}
+
+.run-progress::-webkit-progress-bar {
+  background: var(--track);
+}
+
+.run-progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: var(--phase);
+}
+
+.run-progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--phase);
 }
 
 /* ── Animationsscen ─────────────────────────────────────── */
@@ -450,14 +543,15 @@ a {
   will-change: transform;
 }
 
+/* Siffran är vit på mörka cirklar och mörk på de ljusa (gul/orange), för läsbarhet. */
 .stage-count {
   position: absolute;
-  color: #fff;
+  color: var(--orb-ink, #fff);
   font-size: 4.5rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  text-shadow: var(--count-shadow, 0 2px 8px rgba(0, 0, 0, 0.35));
 }
 
 .stage-images {
@@ -482,14 +576,27 @@ a {
   --orb: var(--c-countdown);
 }
 
+/* Kraftknip: röd, minst (--scale-power) */
 .v-squeeze .orb {
   --orb: var(--c-kraftknip);
   animation: contract 0.5s ease-out forwards;
 }
 
+/* Uthållighetsknip: orange, medelstor (--scale-hold), ligger kvar */
+.v-hold {
+  --orb-ink: #1f2937;
+  --count-shadow: none;
+}
+
 .v-hold .orb {
   --orb: var(--c-uthallighetsknip);
-  animation: hold var(--dur) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: hold 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Snabbknip: gul, pulserar mellan startstorlek och --scale-fast */
+.v-pulse {
+  --orb-ink: #1f2937;
+  --count-shadow: none;
 }
 
 .v-pulse .orb {
@@ -515,24 +622,25 @@ a {
   50% { transform: scale(1); }
 }
 
+/* --from = cirkelns storlek när momentet börjar (sätts av pelvicAnimation.js),
+   så att bytet mellan typer blir mjukt i stället för att hoppa. */
 @keyframes contract {
-  from { transform: scale(1); }
-  to { transform: scale(0.55); }
+  from { transform: scale(var(--from, 1)); }
+  to { transform: scale(var(--scale-power)); }
 }
 
 @keyframes hold {
-  0% { transform: scale(1); }
-  15% { transform: scale(0.72); }
-  100% { transform: scale(0.62); }
+  from { transform: scale(var(--from, 1)); }
+  to { transform: scale(var(--scale-hold)); }
 }
 
 @keyframes pulse {
   from { transform: scale(1); }
-  to { transform: scale(0.6); }
+  to { transform: scale(var(--scale-fast)); }
 }
 
 @keyframes release {
-  from { transform: scale(0.6); }
+  from { transform: scale(var(--from, 0.6)); }
   to { transform: scale(1); }
 }
 
@@ -548,9 +656,26 @@ a {
 }
 
 .defs dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
   font-weight: 700;
 }
+
+/* Färgprick vid momenttyp: samma färg som cirkeln under övningen */
+.type-dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--dot, var(--muted));
+}
+
+.type-dot--vila { --dot: var(--c-vila); }
+.type-dot--snabbknip { --dot: var(--c-snabbknip); }
+.type-dot--uthallighetsknip { --dot: var(--c-uthallighetsknip); }
+.type-dot--kraftknip { --dot: var(--c-kraftknip); }
 
 .defs dd {
   margin: 0;
@@ -559,7 +684,7 @@ a {
 
 .notice {
   padding: 12px 14px;
-  border-left: 4px solid var(--str-3);
+  border-left: 4px solid var(--diff-3);
   border-radius: 8px;
   background: var(--surface);
 }

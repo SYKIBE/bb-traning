@@ -186,3 +186,98 @@ test('pip i slutet av momentet återställs när övningen körs igen', () => {
   runOnce();
   assert.deepEqual(pips, [3, 2, 1, 3, 2, 1]);
 });
+
+// ── Hopp mellan moment ───────────────────────────────────────
+function seekSetup() {
+  let t = 0;
+  const log = [];
+  let lastTick;
+  const runner = createRunner(
+    [
+      { type: 'snabbknip', seconds: 4 }, // 3000–7000
+      { type: 'uthallighetsknip', seconds: 4 }, // 7000–11000
+      { type: 'kraftknip', seconds: 4 }, // 11000–15000
+    ],
+    {
+      now: () => t,
+      setTimer: () => 1,
+      clearTimer: () => {},
+      onCountdownEnd: () => log.push('bing'),
+      onMomentStart: (m, i) => log.push(`start:${i}`),
+      onTick: (info) => (lastTick = info),
+    },
+  );
+  const advance = (ms) => {
+    t += ms;
+    runner.tick();
+  };
+  return { runner, log, advance, tick: () => lastTick };
+}
+
+test('nextMoment hoppar till nästa moments början och tiden fortsätter därifrån', () => {
+  const { runner, log, advance, tick } = seekSetup();
+  runner.start();
+  advance(3000 + 1000); // 1 s in i moment 0
+  assert.equal(runner.nextMoment(), true);
+  assert.equal(log.at(-1), 'start:1');
+  assert.equal(tick().remainingSeconds, 4);
+  advance(1000);
+  assert.equal(tick().index, 1);
+  assert.equal(tick().remainingSeconds, 3);
+});
+
+test('previousMoment: inom 2 s går man till föregående, senare börjar momentet om', () => {
+  const { runner, log, advance } = seekSetup();
+  runner.start();
+  advance(3000 + 4000 + 1000); // 1 s in i moment 1
+  assert.equal(runner.previousMoment(), true);
+  assert.equal(log.at(-1), 'start:0');
+
+  advance(2500); // 2,5 s in i moment 0
+  assert.equal(runner.previousMoment(), true);
+  assert.equal(log.at(-1), 'start:0'); // började om
+  // start:0 loggades två gånger: efter "föregående" och efter omstarten
+  // (advance hoppar direkt till moment 1, så första start:0 kommer först vid hoppet).
+  assert.equal(log.filter((l) => l === 'start:0').length, 2);
+});
+
+test('previousMoment på första momentet börjar om det, och bing spelas inte igen', () => {
+  const { runner, log, advance } = seekSetup();
+  runner.start();
+  advance(3000 + 500);
+  assert.equal(runner.previousMoment(), true);
+  assert.equal(log.filter((l) => l === 'start:0').length, 2);
+  assert.equal(log.filter((l) => l === 'bing').length, 1);
+});
+
+test('hopp går inte under nedräkningen, före start, efter slut eller förbi sista momentet', () => {
+  const { runner, advance } = seekSetup();
+  assert.equal(runner.nextMoment(), false); // före start
+  runner.start();
+  advance(1000); // nedräkning
+  assert.equal(runner.nextMoment(), false);
+  assert.equal(runner.previousMoment(), false);
+  advance(2000 + 8000 + 500); // 0,5 s in i sista momentet
+  assert.equal(runner.nextMoment(), false); // ingen nästa
+  assert.equal(runner.seekToMoment(7), false);
+  advance(5000); // klart
+  assert.equal(runner.status, 'done');
+  assert.equal(runner.previousMoment(), false);
+});
+
+test('hopp vid paus uppdaterar visningen, tiden står still och fortsätt utgår från nya momentet', () => {
+  const { runner, log, advance, tick } = seekSetup();
+  runner.start();
+  advance(3000 + 4000 + 4000 + 500); // 0,5 s in i moment 2
+  runner.pause();
+  assert.equal(runner.previousMoment(), true); // pausad: moment 1
+  assert.equal(runner.status, 'paused');
+  assert.equal(log.at(-1), 'start:1');
+  assert.equal(tick().index, 1);
+  advance(60_000); // lång paus – inget händer
+  assert.equal(tick().remainingSeconds, 4);
+  runner.resume();
+  advance(1000);
+  assert.equal(tick().index, 1);
+  assert.equal(tick().remainingSeconds, 3);
+});

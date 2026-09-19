@@ -1,7 +1,7 @@
-// Kategorier och övningar. Innehållet (tider och styrka) är platshållare och bör
+// Kategorier och övningar. Innehållet (tider och svårighetsgrad) är platshållare och bör
 // granskas av en sjukgymnast/fysioterapeut innan appen publiceras.
 //
-// Övning:  { id, category, title, description, strength: 1..5, blocks: [...] }
+// Övning:  { id, category, title, description, difficulty: 1..5, blocks: [...] }
 // Block:   { repeat?: n, moments: [{ type, seconds, sounds?, visuals?, images? }] }
 // `repeat` upprepar hela blockets moment i ordning n gånger (standard 1).
 
@@ -33,7 +33,7 @@ export const exercises = [
     category: 'kom-igang',
     title: 'Första knipet',
     description: 'Lär känna bäckenbotten med korta, lugna knip och gott om vila.',
-    strength: 1,
+    difficulty: 1,
     blocks: [
       {
         repeat: 6,
@@ -49,7 +49,7 @@ export const exercises = [
     category: 'kom-igang',
     title: 'Lugn uthållighet',
     description: 'Håll knipet lite längre och avsluta med några mjuka snabbknip.',
-    strength: 1,
+    difficulty: 1,
     blocks: [
       {
         repeat: 8,
@@ -72,7 +72,7 @@ export const exercises = [
     category: 'kom-igang',
     title: 'Knip och släpp',
     description: 'Träna både kraft och snabbhet, med tydlig vila emellan.',
-    strength: 2,
+    difficulty: 2,
     blocks: [
       {
         repeat: 6,
@@ -97,7 +97,7 @@ export const exercises = [
     category: 'basovningar',
     title: 'Stabil bas',
     description: 'Längre uthållighetsknip följt av en serie snabbknip.',
-    strength: 2,
+    difficulty: 2,
     blocks: [
       {
         repeat: 6,
@@ -120,7 +120,7 @@ export const exercises = [
     category: 'basovningar',
     title: 'Kraft och puls',
     description: 'Växla mellan kraftknip och snabbknip för att träna hela spännvidden.',
-    strength: 3,
+    difficulty: 3,
     blocks: [
       {
         repeat: 6,
@@ -143,7 +143,7 @@ export const exercises = [
     category: 'basovningar',
     title: 'Kraftpasset',
     description: 'Ett varierat pass: korta kraftknip, ett långt uthållighetsmoment och en snabb avslutning.',
-    strength: 3,
+    difficulty: 3,
     blocks: [
       {
         repeat: 8,
@@ -180,7 +180,7 @@ export const exercises = [
     category: 'avancerade',
     title: 'Långa hållet',
     description: 'Krävande uthållighet med långa knip och kort vila.',
-    strength: 4,
+    difficulty: 4,
     blocks: [
       {
         repeat: 6,
@@ -203,7 +203,7 @@ export const exercises = [
     category: 'avancerade',
     title: 'Snabb och stark',
     description: 'Hög tempo-serie av snabbknip följt av tunga kraftknip.',
-    strength: 4,
+    difficulty: 4,
     blocks: [
       {
         repeat: 20,
@@ -226,7 +226,7 @@ export const exercises = [
     category: 'avancerade',
     title: 'Full styrka',
     description: 'Det tuffaste passet: många kraftknip, ett riktigt långt hold och snabb avslutning.',
-    strength: 5,
+    difficulty: 5,
     blocks: [
       {
         repeat: 10,

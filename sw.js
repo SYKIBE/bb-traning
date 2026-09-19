@@ -27,7 +27,7 @@ const SHELL = [
   './js/engine/runner.js',
   './js/engine/summary.js',
   './js/components/navbar.js',
-  './js/components/strengthBar.js',
+  './js/components/difficultyBar.js',
   './js/components/pelvicAnimation.js',
   './js/views/common.js',
   './js/views/home.js',

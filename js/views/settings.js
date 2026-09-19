@@ -52,7 +52,7 @@ export function settingsView() {
     h(
       'div',
       { class: 'settings' },
-      toggle('sound', 'Ljud', 'Pip, bing och signaler vid momentbyte'),
+      toggle('sound', 'Ljud', 'Ljud och signaler vid momentbyte'),
       h('div', { class: 'setting setting-volume' }, h('span', { class: 'setting-label' }, 'Volym'), volume, test),
       toggle('vibration', 'Vibration', 'Kort vibration vid start och momentbyte (om enheten stöder det)'),
       toggle('wakeLock', 'Håll skärmen tänd', 'Skärmen släcks inte under en pågående övning'),

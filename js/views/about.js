@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { momentTypes } from '../data/momentTypes.js';
-import { strengthBar } from '../components/strengthBar.js';
+import { difficultyBar } from '../components/difficultyBar.js';
 
 export function aboutView() {
   return h(
@@ -28,19 +28,25 @@ export function aboutView() {
     h(
       'dl',
       { class: 'defs' },
-      Object.values(momentTypes).flatMap((type) => [
-        h('dt', null, type.label),
+      Object.entries(momentTypes).flatMap(([key, type]) => [
+        h('dt', null, h('span', { class: `type-dot type-dot--${key}`, 'aria-hidden': 'true' }), type.label),
         h('dd', null, type.description),
       ]),
     ),
-
-    h('h2', null, 'Styrka'),
     h(
       'p',
       null,
-      'Varje övning har en styrka från 1 (lägst, grön) till 5 (högst, röd). Börja lågt och öka när det känns lätt.',
+      'Ju mindre cirkeln blir och ju varmare färgen är, desto hårdare ska du knipa: snabbknip (gul) minst, ' +
+        'uthållighetsknip (orange) mer och kraftknip (röd) mest. Vila (blågrön) är startläget.',
     ),
-    h('div', { class: 'strength-legend' }, [1, 2, 3, 4, 5].map((n) => strengthBar(n))),
+
+    h('h2', null, 'Svårighetsgrader'),
+    h(
+      'p',
+      null,
+      'Varje övning har en svårighetsgrad från 1 (enklast, grön) till 5 (svårast, röd). Börja enkelt och öka när det känns lätt.',
+    ),
+    h('div', { class: 'difficulty-legend' }, [1, 2, 3, 4, 5].map((n) => difficultyBar(n))),
 
     h('h2', null, 'Viktigt'),
     h(

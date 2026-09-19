@@ -8,7 +8,7 @@ export function formatDuration(totalSeconds) {
   return seconds === 0 ? `${minutes} min` : `${minutes} min ${seconds} s`;
 }
 
-// Nyckeltal för startvyn: antal moment, total tid, längsta knip och styrka.
+// Nyckeltal för startvyn: antal moment, total tid, längsta knip och svårighetsgrad.
 export function summarize(exercise) {
   const moments = expand(exercise);
   const active = moments.filter((m) => !getMomentType(m.type).rest);
@@ -18,7 +18,7 @@ export function summarize(exercise) {
     restCount: moments.length - active.length,
     totalSeconds: moments.reduce((sum, m) => sum + m.seconds, 0),
     longestSeconds: active.reduce((max, m) => Math.max(max, m.seconds), 0),
-    strength: exercise.strength,
+    difficulty: exercise.difficulty,
   };
 }
 

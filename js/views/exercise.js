@@ -1,17 +1,37 @@
-import { h } from '../dom.js';
+import { h, s } from '../dom.js';
 import { getExercise, getCategory } from '../data/exercises.js';
 import { getMomentType, resolveSounds, resolveVisuals } from '../data/momentTypes.js';
 import { expand } from '../engine/expand.js';
 import { summarize, blockLines, formatDuration } from '../engine/summary.js';
 import { createRunner } from '../engine/runner.js';
 import { createStage } from '../components/pelvicAnimation.js';
-import { strengthBar } from '../components/strengthBar.js';
+import { difficultyBar } from '../components/difficultyBar.js';
 import { unlock, play, vibrate } from '../audio.js';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock.js';
 import { getSettings, setLastExerciseId } from '../store.js';
 import { backLink } from './common.js';
 
 const BUTTON_LABELS = { idle: 'Start', active: 'Paus', paused: 'Fortsätt', done: 'Kör igen' };
+
+// Chevron-ikon för hopp mellan moment
+const chevron = (direction) =>
+  s(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2.5',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      'aria-hidden': 'true',
+      focusable: 'false',
+    },
+    s('polyline', { points: direction === 'left' ? '15 18 9 12 15 6' : '9 18 15 12 9 6' }),
+  );
+
+const skipButton = (direction, label, onClick) =>
+  h('button', { type: 'button', class: 'btn-icon', 'aria-label': label, title: label, disabled: true, onClick }, chevron(direction));
 
 const stat = (value, label) =>
   h('div', { class: 'stat' }, h('span', { class: 'stat-value' }, value), h('span', { class: 'stat-label' }, label));
@@ -42,6 +62,10 @@ export function exerciseView(id, autostart) {
     { type: 'button', class: 'btn btn-secondary btn-lg', hidden: true, onClick: () => runner.stop() },
     'Avsluta',
   );
+  // Hopp mellan moment: aktiva bara medan övningen körs eller är pausad (inte under nedräkningen).
+  const prevButton = skipButton('left', 'Föregående moment', () => runner.previousMoment());
+  const nextButton = skipButton('right', 'Nästa moment', () => runner.nextMoment());
+  let momentIndex = -1; // pågående moment, -1 = inget (före start, nedräkning, klar)
 
   // ── Motor ──────────────────────────────────────────────────
   const runner = createRunner(moments, {
@@ -83,6 +107,10 @@ export function exerciseView(id, autostart) {
         for (const name of resolveSounds(moment)) play(name);
         vibrate(type.rest ? 60 : [60, 40, 60]);
       }
+      momentIndex = index;
+      updateSkipButtons();
+      // setVisuals nollställer klasserna; behåll pausläget om man hoppade medan pausad.
+      stage.setPaused(runner.status === 'paused');
     },
 
     // De 3 sista sekunderna av moment längre än 5 s: samma pip som i startnedräkningen.
@@ -117,6 +145,8 @@ export function exerciseView(id, autostart) {
     runPanel.hidden = status === 'idle';
     endButton.hidden = status !== 'paused';
     primary.textContent = BUTTON_LABELS[status];
+    if (status === 'idle' || status === 'done') momentIndex = -1;
+    updateSkipButtons();
     if (status === 'idle') {
       stage.idle();
       progress.value = 0;
@@ -125,7 +155,14 @@ export function exerciseView(id, autostart) {
     stage.setPaused(status === 'paused');
   }
 
+  function updateSkipButtons() {
+    const running = (runner.status === 'active' || runner.status === 'paused') && momentIndex >= 0;
+    prevButton.disabled = !running;
+    nextButton.disabled = !running || momentIndex >= moments.length - 1;
+  }
+
   function begin() {
+    momentIndex = -1;
     unlock(); // ljudmotorn måste startas från en användarhändelse
     stage.setVisuals(['countdown']);
     if (getSettings().wakeLock) acquireWakeLock();
@@ -151,7 +188,7 @@ export function exerciseView(id, autostart) {
   };
   document.addEventListener('visibilitychange', onVisible);
 
-  // ── Startvy: text, nyckeltal och momentens upplägg ─────────
+  // ── Startvy: text, nyckeltal och övningens upplägg ─────────
   const view = h(
     'section',
     { class: 'view view-exercise' },
@@ -160,13 +197,13 @@ export function exerciseView(id, autostart) {
     stage.el,
     runPanel,
     live,
-    h('div', { class: 'controls' }, primary, endButton),
+    h('div', { class: 'controls' }, prevButton, primary, endButton, nextButton),
     h(
       'div',
       { class: 'stats' },
       stat(String(info.momentCount), 'moment'),
       stat(formatDuration(info.totalSeconds), 'total tid'),
-      h('div', { class: 'stat' }, strengthBar(info.strength, { large: true }), h('span', { class: 'stat-label' }, `Styrka ${info.strength} av 5`)),
+      h('div', { class: 'stat' }, difficultyBar(info.difficulty, { large: true }), h('span', { class: 'stat-label' }, `Svårighet ${info.difficulty} av 5`)),
     ),
     h('p', { class: 'lead' }, exercise.description),
     h(
@@ -174,7 +211,7 @@ export function exerciseView(id, autostart) {
       { class: 'facts' },
       `${info.activeCount} knip och ${info.restCount} ${info.restCount === 1 ? 'vila' : 'vilor'}. Längsta knip: ${info.longestSeconds} s.`,
     ),
-    h('h2', { class: 'group-title' }, 'Momentens upplägg'),
+    h('h2', { class: 'group-title' }, 'Övningens upplägg'),
     h('ul', { class: 'block-lines' }, blockLines(exercise).map((line) => h('li', null, line))),
   );
 

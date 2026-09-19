@@ -1,12 +1,12 @@
 import { h } from '../dom.js';
-import { strengthBar } from '../components/strengthBar.js';
+import { difficultyBar } from '../components/difficultyBar.js';
 import { summarize, formatDuration } from '../engine/summary.js';
 
 export function backLink(href, label) {
   return h('a', { class: 'back-link', href }, `‹ ${label}`);
 }
 
-// Kort för en övning i en lista: titel, kort text, styrka och längd.
+// Kort för en övning i en lista: titel, kort text, svårighetsgrad och längd.
 export function exerciseCard(exercise) {
   const info = summarize(exercise);
   return h(
@@ -17,7 +17,7 @@ export function exerciseCard(exercise) {
     h(
       'div',
       { class: 'card-meta' },
-      strengthBar(exercise.strength),
+      difficultyBar(exercise.difficulty),
       h('span', null, `${formatDuration(info.totalSeconds)} · ${info.momentCount} moment`),
     ),
   );

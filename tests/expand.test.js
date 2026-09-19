@@ -60,7 +60,7 @@ test('formatDuration', () => {
   assert.equal(formatDuration(290), '4 min 50 s');
 });
 
-test('datan är konsekvent: 3 kategorier × 3 övningar, känd typ och styrka 1–5', () => {
+test('datan är konsekvent: 3 kategorier × 3 övningar, känd typ och svårighetsgrad 1–5', () => {
   assert.equal(categories.length, 3);
   for (const category of categories) {
     assert.equal(getExercisesByCategory(category.id).length, 3, category.id);
@@ -70,7 +70,7 @@ test('datan är konsekvent: 3 kategorier × 3 övningar, känd typ och styrka 1�
     assert.ok(!ids.has(exercise.id), `dubblett-id ${exercise.id}`);
     ids.add(exercise.id);
     assert.ok(categories.some((c) => c.id === exercise.category), exercise.id);
-    assert.ok(Number.isInteger(exercise.strength) && exercise.strength >= 1 && exercise.strength <= 5);
+    assert.ok(Number.isInteger(exercise.difficulty) && exercise.difficulty >= 1 && exercise.difficulty <= 5);
     for (const moment of expand(exercise)) {
       assert.notEqual(getMomentType(moment.type).label, 'Moment', `okänd typ ${moment.type}`);
       assert.ok(moment.seconds > 0);

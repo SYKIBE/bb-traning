@@ -45,7 +45,7 @@ Alla övningar ligger i [js/data/exercises.js](js/data/exercises.js):
   category: 'basovningar',          // kom-igang | basovningar | avancerade
   title: 'Min övning',
   description: 'Kort text som visas i startvyn.',
-  strength: 3,                      // 1–5
+  difficulty: 3,                    // 1–5
   blocks: [
     { repeat: 8, moments: [{ type: 'kraftknip', seconds: 12 }, { type: 'vila', seconds: 8 }] },
     { moments: [{ type: 'kraftknip', seconds: 30 }, { type: 'vila', seconds: 20 }] },
