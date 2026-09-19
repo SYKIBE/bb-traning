@@ -1,0 +1,4 @@
+# Normalisera radslut till LF i repot (undviker CRLF-brus när man jobbar på Windows).
+* text=auto eol=lf
+
+*.png binary
