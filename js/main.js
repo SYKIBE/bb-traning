@@ -6,6 +6,7 @@ import { exerciseView } from './views/exercise.js';
 import { trainingView } from './views/training.js';
 import { aboutView } from './views/about.js';
 import { settingsView } from './views/settings.js';
+import { initUpdates } from './updates.js';
 
 // `nav` anger vilken ikon i bottennavigeringen som markeras på sidan.
 const routes = [
@@ -21,8 +22,5 @@ const routes = [
 const navbar = createNavbar(document.getElementById('navbar'));
 startRouter(document.getElementById('app'), routes, (nav) => navbar.setActive(nav));
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {
-    // Offline-stöd är en bonus; appen fungerar utan.
-  });
-}
+// Registrerar servicearbetaren (offline) och visar en banner när en ny version finns.
+initUpdates();

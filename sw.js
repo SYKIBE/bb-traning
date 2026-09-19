@@ -18,6 +18,8 @@ const SHELL = [
   './js/router.js',
   './js/dom.js',
   './js/store.js',
+  './js/updates.js',
+  './js/updateState.js',
   './js/version.js',
   './js/audio.js',
   './js/wakeLock.js',

@@ -9,6 +9,7 @@ import { difficultyBar } from '../components/difficultyBar.js';
 import { unlock, play, vibrate } from '../audio.js';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock.js';
 import { getSettings, setLastExerciseId } from '../store.js';
+import { suppressUpdateBanner } from '../updates.js';
 import { backLink } from './common.js';
 
 const BUTTON_LABELS = { idle: 'Start', active: 'Paus', paused: 'Fortsätt', done: 'Kör igen' };
@@ -142,6 +143,8 @@ export function exerciseView(id, autostart) {
   });
 
   function renderStatus(status) {
+    // Ingen "ny version"-banner mitt i en övning (och man ska inte kunna ladda om den av misstag).
+    suppressUpdateBanner(status === 'active' || status === 'paused');
     runPanel.hidden = status === 'idle';
     endButton.hidden = status !== 'paused';
     primary.textContent = BUTTON_LABELS[status];
@@ -219,6 +222,7 @@ export function exerciseView(id, autostart) {
     document.removeEventListener('visibilitychange', onVisible);
     runner.stop();
     releaseWakeLock();
+    suppressUpdateBanner(false);
   };
 
   if (autostart) {

@@ -839,6 +839,75 @@ a {
   color: var(--primary);
 }
 
+/* ── "Ny version"-banner ────────────────────────────────── */
+/* Flytande kort ovanför bottennavigeringen: inget innehåll flyttas när den dyker upp. */
+.update-banner {
+  position: fixed;
+  right: 8px;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  left: 8px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  max-width: 584px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+  animation: banner-in 0.25s ease-out;
+}
+
+.update-text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.update-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.update-banner button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.update-action {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.update-later {
+  border-color: color-mix(in srgb, var(--bg) 55%, transparent);
+  background: transparent;
+  color: var(--bg);
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .update-banner {
+    animation: none;
+  }
+}
+
 /* ── Minskad rörelse ────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .orb {

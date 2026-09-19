@@ -35,6 +35,8 @@ git push --follow-tags
 
 Tester ([tests/version.test.js](tests/version.test.js)) varnar om något av detta hamnar ur synk.
 
+**Meddelande om ny version:** Användare som har appen öppen får en banner när en ny version släppts: varje release ändrar `sw.js` (cache-namnet), och webbläsaren upptäcker den nya servicearbetaren i bakgrunden ([js/updates.js](js/updates.js)). Bannern visas alltså bara vid riktiga releaser och göms medan en övning pågår.
+
 ## Lägga till en övning
 
 Alla övningar ligger i [js/data/exercises.js](js/data/exercises.js):
