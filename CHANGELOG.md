@@ -8,6 +8,8 @@ automatiskt till en ny versionsrubrik med dagens datum.
 
 ## [Ej släppt]
 
+## [0.4.0] - 2026-11-05
+
 ### Ändrat
 - Svårighetsgraden visas som en ring med fem segment och siffran i mitten i stället för staplar. Ringen har en öppning nertill, och segmenten fylls medurs i samma färger som förut (grön → röd).
 - Hjälptexten under momentnamnet i övningsvyn har alltid plats för två rader. Raderna "Omgång …" och "Nästa: …" har alltid plats för en rad, så innehållet nedanför hoppar inte när texten byts eller radbryts.
