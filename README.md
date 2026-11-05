@@ -6,7 +6,7 @@ Guidade bäckenbottenövningar som en PWA i vanilla JS (ES-moduler, inga beroend
 
 ```sh
 npm start        # python -m http.server 8080 → http://localhost:8080
-npm test         # node --test tests/
+npm test         # node --test (hittar alla *.test.js)
 npm run icons    # generera om PNG-ikonerna i icons/
 ```
 

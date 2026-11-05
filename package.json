@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "start": "python -m http.server 8080",
-    "test": "node --test tests/",
+    "test": "node --test",
     "icons": "node tools/make-icons.mjs",
     "sync-version": "node tools/sync-version.mjs",
     "version": "npm run sync-version && git add js/version.js sw.js CHANGELOG.md"
