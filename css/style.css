@@ -293,52 +293,61 @@ a {
 
 .card-meta {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   color: var(--muted);
   font-size: 0.875rem;
 }
 
-/* ── Svårighetsstapel ───────────────────────────────────── */
+/* ── Svårighetsring ─────────────────────────────────────── */
+/* Måtten i ringen (linjebredd, siffra) är i SVG:ns viewBox 0 0 100 100 och skalar med storleken. */
 .difficulty {
-  --step-w: 10px;
-  --step-h: 6px;
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 3px;
+  --size: 36px;
+  display: block;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
 }
 
 .difficulty--lg {
-  --step-w: 14px;
-  --step-h: 9px;
-  gap: 4px;
+  --size: 56px;
 }
 
-.difficulty-step {
-  width: var(--step-w);
-  height: calc(var(--step-h) * (var(--n) + 1));
-  border-radius: 3px;
-  background: var(--track);
+.difficulty-seg {
+  fill: none;
+  stroke: color-mix(in srgb, var(--track) 70%, transparent);
+  stroke-width: 11;
 }
 
-.difficulty-step[data-step='1'] { --n: 1; }
-.difficulty-step[data-step='2'] { --n: 2; }
-.difficulty-step[data-step='3'] { --n: 3; }
-.difficulty-step[data-step='4'] { --n: 4; }
-.difficulty-step[data-step='5'] { --n: 5; }
+.difficulty-seg.is-on[data-level='1'] { stroke: var(--diff-1); }
+.difficulty-seg.is-on[data-level='2'] { stroke: var(--diff-2); }
+.difficulty-seg.is-on[data-level='3'] { stroke: var(--diff-3); }
+.difficulty-seg.is-on[data-level='4'] { stroke: var(--diff-4); }
+.difficulty-seg.is-on[data-level='5'] { stroke: var(--diff-5); }
 
-.difficulty-step.is-on[data-step='1'] { background: var(--diff-1); }
-.difficulty-step.is-on[data-step='2'] { background: var(--diff-2); }
-.difficulty-step.is-on[data-step='3'] { background: var(--diff-3); }
-.difficulty-step.is-on[data-step='4'] { background: var(--diff-4); }
-.difficulty-step.is-on[data-step='5'] { background: var(--diff-5); }
+.difficulty-num {
+  fill: var(--text);
+  font-size: 34px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
 
 .difficulty-legend {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 8px;
   margin: 8px 0 16px;
+}
+
+/* På riktigt smala skärmar krymper ringarna hellre än att bryta rad. */
+.difficulty-legend .difficulty {
+  flex: 0 1 var(--size);
+  width: auto;
+  height: auto;
+  min-width: 0;
+  aspect-ratio: 1;
 }
 
 /* ── Övning ─────────────────────────────────────────────── */
@@ -483,6 +492,21 @@ a {
 .run-hint,
 .run-next {
   color: var(--muted);
+}
+
+/* Fast höjd så att innehållet nedanför inte hoppar när texten byts, radbryts eller är tom.
+   Radhöjden är 1.5 (från body), så 1.5em = en rad. */
+.run-round,
+.run-next {
+  min-height: 1.5em;
+}
+
+/* Alltid två rader hög; en kort text centreras lodrätt. */
+.run-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3em;
 }
 
 /* Egen stil så att banan ser lika ut oavsett fyllnadsfärg (Chrome väljer annars banfärg efter accentfärgens ljushet). */

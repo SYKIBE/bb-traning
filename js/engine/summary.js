@@ -9,11 +9,12 @@ export function formatDuration(totalSeconds) {
 }
 
 // Nyckeltal för startvyn: antal moment, total tid, längsta knip och svårighetsgrad.
+// Ett "moment" i texten är ett knip – vilor räknas inte.
 export function summarize(exercise) {
   const moments = expand(exercise);
   const active = moments.filter((m) => !getMomentType(m.type).rest);
   return {
-    momentCount: moments.length,
+    momentCount: active.length,
     activeCount: active.length,
     restCount: moments.length - active.length,
     totalSeconds: moments.reduce((sum, m) => sum + m.seconds, 0),
@@ -22,13 +23,30 @@ export function summarize(exercise) {
   };
 }
 
-// Läsbar beskrivning av varje block, t.ex. "8 × (Kraftknip 12 s + Vila 8 s)".
+const restText = (seconds) => `${seconds} ${seconds === 1 ? 'sekunds' : 'sekunders'} vila`;
+
+// Läsbar beskrivning av varje block, t.ex. "8 × Kraftknip 12 s med 8 sekunders vila mellan knipen".
+// Block som inte är "ett knip + vila" (eller bara ett knip) beskrivs moment för moment.
 export function blockLines(exercise) {
-  return exercise.blocks.map((block) => {
+  return exercise.blocks.map((block, blockIndex) => {
+    const repeat = block.repeat ?? 1;
+    const [squeeze, rest] = block.moments;
+    const isSqueeze = (m) => m && !getMomentType(m.type).rest;
+    const isRest = (m) => m && getMomentType(m.type).rest;
+
+    if (block.moments.length <= 2 && isSqueeze(squeeze) && (!rest || isRest(rest))) {
+      const base = `${repeat} × ${getMomentType(squeeze.type).label} ${squeeze.seconds} s`;
+      // Vilan sist i övningen körs inte (se expand), så ett ensamt sista knip får ingen vila.
+      const isLast = blockIndex === exercise.blocks.length - 1;
+      if (!rest || (repeat === 1 && isLast)) return base;
+      return repeat > 1
+        ? `${base} med ${restText(rest.seconds)} mellan knipen`
+        : `${base} med ${restText(rest.seconds)} efter knipet`;
+    }
+
     const parts = block.moments
       .map((m) => `${getMomentType(m.type).label} ${m.seconds} s`)
       .join(' + ');
-    const repeat = block.repeat ?? 1;
     return repeat > 1 ? `${repeat} × (${parts})` : parts;
   });
 }

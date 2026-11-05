@@ -5,7 +5,7 @@ import { expand } from '../engine/expand.js';
 import { summarize, blockLines, formatDuration } from '../engine/summary.js';
 import { createRunner } from '../engine/runner.js';
 import { createStage } from '../components/pelvicAnimation.js';
-import { difficultyBar } from '../components/difficultyBar.js';
+import { difficultyRing } from '../components/difficultyRing.js';
 import { unlock, play, vibrate } from '../audio.js';
 import { acquireWakeLock, releaseWakeLock } from '../wakeLock.js';
 import { getSettings, setLastExerciseId } from '../store.js';
@@ -206,7 +206,7 @@ export function exerciseView(id, autostart) {
       { class: 'stats' },
       stat(String(info.momentCount), 'moment'),
       stat(formatDuration(info.totalSeconds), 'total tid'),
-      h('div', { class: 'stat' }, difficultyBar(info.difficulty, { large: true }), h('span', { class: 'stat-label' }, `Svårighet ${info.difficulty} av 5`)),
+      h('div', { class: 'stat' }, difficultyRing(info.difficulty, { large: true }), h('span', { class: 'stat-label' }, `Svårighet ${info.difficulty} av 5`)),
     ),
     h('p', { class: 'lead' }, exercise.description),
     h(

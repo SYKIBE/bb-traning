@@ -4,6 +4,7 @@
 // Övning:  { id, category, title, description, difficulty: 1..5, blocks: [...] }
 // Block:   { repeat?: n, moments: [{ type, seconds, sounds?, visuals?, images? }] }
 // `repeat` upprepar hela blockets moment i ordning n gånger (standard 1).
+// En övning avslutas alltid med ett knip: vila sist i övningen hoppas över automatiskt.
 
 export const categories = [
   {

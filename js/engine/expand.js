@@ -1,4 +1,7 @@
+import { getMomentType } from '../data/momentTypes.js';
+
 // Plattar ut en övnings block och repetitioner till en linjär lista av moment.
+// En övning ska alltid avslutas med ett knip, så vila i slutet tas bort.
 // Ren funktion, inget DOM – lätt att testa.
 export function expand(exercise) {
   const moments = [];
@@ -10,5 +13,6 @@ export function expand(exercise) {
       }
     }
   });
+  while (moments.length > 0 && getMomentType(moments.at(-1).type).rest) moments.pop();
   return moments;
 }

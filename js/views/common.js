@@ -1,5 +1,5 @@
 import { h } from '../dom.js';
-import { difficultyBar } from '../components/difficultyBar.js';
+import { difficultyRing } from '../components/difficultyRing.js';
 import { summarize, formatDuration } from '../engine/summary.js';
 
 export function backLink(href, label) {
@@ -17,7 +17,7 @@ export function exerciseCard(exercise) {
     h(
       'div',
       { class: 'card-meta' },
-      difficultyBar(exercise.difficulty),
+      difficultyRing(exercise.difficulty),
       h('span', null, `${formatDuration(info.totalSeconds)} · ${info.momentCount} moment`),
     ),
   );

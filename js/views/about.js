@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { momentTypes } from '../data/momentTypes.js';
-import { difficultyBar } from '../components/difficultyBar.js';
+import { difficultyRing } from '../components/difficultyRing.js';
 
 export function aboutView() {
   return h(
@@ -46,7 +46,7 @@ export function aboutView() {
       null,
       'Varje övning har en svårighetsgrad från 1 (enklast, grön) till 5 (svårast, röd). Börja enkelt och öka när det känns lätt.',
     ),
-    h('div', { class: 'difficulty-legend' }, [1, 2, 3, 4, 5].map((n) => difficultyBar(n))),
+    h('div', { class: 'difficulty-legend' }, [1, 2, 3, 4, 5].map((n) => difficultyRing(n, { large: true }))),
 
     h('h2', null, 'Viktigt'),
     h(

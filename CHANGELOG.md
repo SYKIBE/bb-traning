@@ -8,6 +8,13 @@ automatiskt till en ny versionsrubrik med dagens datum.
 
 ## [Ej släppt]
 
+### Ändrat
+- Svårighetsgraden visas som en ring med fem segment och siffran i mitten i stället för staplar. Ringen har en öppning nertill, och segmenten fylls medurs i samma färger som förut (grön → röd).
+- Hjälptexten under momentnamnet i övningsvyn har alltid plats för två rader. Raderna "Omgång …" och "Nästa: …" har alltid plats för en rad, så innehållet nedanför hoppar inte när texten byts eller radbryts.
+- "Moment" i övningsvyn och övningslistan räknar nu bara knipövningar, inte vilor. Första knipet visar till exempel 6 moment i stället för 12.
+- Alla övningar avslutas nu med ett knip. Vilan sist i en övning hoppas över automatiskt, så den totala tiden blir lite kortare.
+- "Övningens upplägg" beskriver nu varje del som till exempel "6 × Uthållighetsknip 4 s med 10 sekunders vila mellan knipen".
+
 ## [0.3.0] - 2026-09-20
 
 ### Tillagt
